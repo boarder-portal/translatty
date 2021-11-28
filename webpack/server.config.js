@@ -8,10 +8,10 @@ module.exports = {
     rules: [
       ...commonConfig.module.rules,
       {
-        test: /\.(scss|css)$/,
+        test: /\.css$/,
         use: ['file-loader'],
-      }
-    ]
+      },
+    ],
   },
   entry: path.resolve(__dirname, '../app/server/server.ts'),
   target: 'node',
@@ -20,4 +20,4 @@ module.exports = {
     chunkFilename: '[name].[contenthash].js',
     path: path.resolve(__dirname, '../build/server'),
   },
-}
+};
