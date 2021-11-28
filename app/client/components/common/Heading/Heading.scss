@@ -1,0 +1,26 @@
+.Heading {
+  font-weight: bold;
+  line-height: 1.2;
+
+  &_level {
+    &_1 {
+      font-size: 2rem;
+    }
+
+    &_2 {
+      font-size: 1.75rem;
+    }
+
+    &_3 {
+      font-size: 1.5rem;
+    }
+
+    &_4 {
+      font-size: 1.25rem;
+    }
+
+    &_5 {
+      font-size: 1rem;
+    }
+  }
+}

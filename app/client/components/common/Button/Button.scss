@@ -1,0 +1,25 @@
+.Button {
+  color: white;
+  border: 0;
+  border-radius: 4px;
+  outline: 0;
+  cursor: pointer;
+  padding: 12px 24px;
+
+  &_type {
+    &_success {
+      background: #82BF56;
+      border-bottom: 2px solid darken(#82BF56, 10%);
+    }
+
+    &_danger {
+      background: #E74C3C;
+      border-bottom: 2px solid darken(#E74C3C, 10%);
+    }
+  }
+
+  &_disabled {
+    background: #dcdcdc;
+    border-bottom: 2px solid darken(#dcdcdc, 10%);
+  }
+}

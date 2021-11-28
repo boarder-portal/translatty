@@ -1,0 +1,1 @@
+export const HUMAN_DATE_FORMAT = 'DD MMMM YYYY';

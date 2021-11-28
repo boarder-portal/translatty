@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2017",
+    "strict": true,
+    "outDir": "./dist",
+    "lib": ["dom"],
+    "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "server/*": ["./app/server/*"],
+      "client/*": ["./app/client/*"],
+      "common/*": ["./app/common/*"]
+    }
+  },
+  "include": [
+    "./app/**/*"
+  ],
+  "exclude": [
+    "**/node_modules/*",
+    "**/build/*",
+  ]
+}
