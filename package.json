@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:start": "npm-run-all --parallel dev:client:build:watch dev:server:build:watch dev:server:start:watch",
+    "dev:start": "npm-run-all --parallel dev:client:build:watch dev:server:build:watch dev:server:start:watch css:watch",
     "dev:client:build:watch": "webpack -w -c ./webpack/client.config.js",
     "dev:server:build:watch": "webpack -w -c ./webpack/server.config.js",
     "dev:server:start:watch": "supervisor ./build/server/main.js",
@@ -14,6 +14,7 @@
     "prod:server:build": "NODE_ENV=production webpack -c ./webpack/server.config.js",
     "prod:server:start": "node ./build/server/main.js",
     "prod:analize-bundle": "ANALYZE_BUNDLE=1 npm run prod:client:build",
+    "css:watch": "tcm -p app/**/*.pcss --watch",
     "generate-db": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node -r tsconfig-paths/register app/server/db/generateDB.ts",
     "typecheck": "tsc --noEmit",
     "eslint": "eslint . --ext .js,.jsx,.ts,.tsx",
@@ -96,6 +97,7 @@
     "prettier": "^2.3.0",
     "supervisor": "^0.12.0",
     "tsconfig-paths": "^3.9.0",
+    "typed-css-modules": "^0.7.0",
     "webpack": "^5.38.1",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.7.0"
