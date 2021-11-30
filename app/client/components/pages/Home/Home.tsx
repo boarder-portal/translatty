@@ -1,5 +1,5 @@
 import { h, FunctionalComponent } from 'preact';
-import { memo, useCallback, useEffect, useRef, useState } from 'preact/compat';
+import { memo, useCallback, useEffect, useState, JSX } from 'preact/compat';
 
 import { ISubPair } from 'server/types/subs';
 
@@ -27,23 +27,38 @@ const Home: FunctionalComponent = () => {
     setIsOriginalDisplayed(true);
   }, []);
 
+  const handleSubmit: JSX.GenericEventHandler<HTMLFormElement> = useCallback(
+    async (e) => {
+      e.preventDefault();
+
+      if (isOriginalDisplayed) {
+        await requestSubPair();
+
+        const input = document.querySelector('input');
+
+        if (input) {
+          input.focus();
+        }
+      } else {
+        showOriginal();
+      }
+    },
+    [isOriginalDisplayed, requestSubPair, showOriginal],
+  );
+
   useEffect(() => {
     requestSubPair();
   }, [requestSubPair]);
 
   useEffect(() => {
     const listener = async (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        if (isOriginalDisplayed) {
-          await requestSubPair();
+      if (e.key === 'Enter' && isOriginalDisplayed) {
+        await requestSubPair();
 
-          const input = document.querySelector('input');
+        const input = document.querySelector('input');
 
-          if (input) {
-            input.focus();
-          }
-        } else {
-          showOriginal();
+        if (input) {
+          input.focus();
         }
       }
     };
@@ -60,7 +75,7 @@ const Home: FunctionalComponent = () => {
       <Heading level={1}>🇭🇲 Translatty</Heading>
 
       {subPair && (
-        <form className={cx.content}>
+        <form className={cx.content} onSubmit={handleSubmit}>
           <div>{subPair.translation}</div>
 
           {isOriginalDisplayed && (
