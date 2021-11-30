@@ -1,3 +1,5 @@
+import { IGetSubResponse } from 'common/types/requests/getSub';
+
 class HttpClient {
   async get(url: string, params?: any) {
     const rawResponse = await fetch(`${url}?${new URLSearchParams(params)}`);
@@ -18,9 +20,9 @@ class HttpClient {
     return await rawResponse.json();
   }
 
-  // async getRoom(params: IGetRoomRequestParams): Promise<ICreateRoomResponse> {
-  //   return this.get('/api/room', params);
-  // }
+  async getSub(): Promise<IGetSubResponse> {
+    return this.get('/api/getSub');
+  }
 }
 
 const httpClient = new HttpClient();
