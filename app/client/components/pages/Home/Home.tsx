@@ -1,7 +1,7 @@
 import { h, FunctionalComponent } from 'preact';
 import { memo, useCallback, useEffect, useState, JSX } from 'preact/compat';
 
-import { ISubPair } from 'server/types/subs';
+import { TSubPair } from 'server/types/subs';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
@@ -10,7 +10,7 @@ import { Button, Container, Heading, Input } from 'boarder-components/dist/';
 import cx from './Home.pcss';
 
 const Home: FunctionalComponent = () => {
-  const [subPair, setSubPair] = useState<ISubPair | null>(null);
+  const [subPair, setSubPair] = useState<TSubPair | null>(null);
   const [userGuess, setUserGuess] = useState('');
   const [isOriginalDisplayed, setIsOriginalDisplayed] = useState(false);
 
@@ -76,10 +76,10 @@ const Home: FunctionalComponent = () => {
 
       {subPair && (
         <form className={cx.content} onSubmit={handleSubmit}>
-          <div>{subPair.translation}</div>
+          <div>{subPair[1]}</div>
 
           {isOriginalDisplayed && (
-            <div className={cx.original}>{subPair.original}</div>
+            <div className={cx.original}>{subPair[0]}</div>
           )}
 
           {!isOriginalDisplayed && (

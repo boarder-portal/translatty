@@ -4,4 +4,4 @@ build
 
 *.pcss.d.ts
 
-db.json
+/DB

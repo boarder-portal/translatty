@@ -1,12 +1,20 @@
-import { ISub, ISubPair } from 'server/types/subs';
+import { ISub, TSubPair, ISubPath } from 'server/types/subs';
 
 import getSubPairMatchScore from 'server/utilities/subs/getSubPairMatchScore';
+import getParsedSubs from 'server/utilities/subs/getParsedSubs';
 
-export default function getSubPairs(
-  enSubs: ISub[],
-  ruSubs: ISub[],
-): ISubPair[] {
-  const subPairs: ISubPair[] = [];
+export default async function getSubPairs({
+  serial,
+  season,
+  episode,
+}: ISubPath): Promise<TSubPair[]> {
+  const { en: enSubs, ru: ruSubs } = await getParsedSubs({
+    serial,
+    season,
+    episode,
+  });
+
+  const subPairs: TSubPair[] = [];
   let translationIndexToStartFrom = 0;
 
   for (let originalIndex = 0; originalIndex < enSubs.length; originalIndex++) {
@@ -36,10 +44,7 @@ export default function getSubPairs(
     if (bestScore > 0.7 && bestScoreIndex !== null) {
       translationIndexToStartFrom = bestScoreIndex + 1;
 
-      subPairs.push({
-        original: currentOriginalSub.text,
-        translation: ruSubs[bestScoreIndex].text,
-      });
+      subPairs.push([currentOriginalSub.text, ruSubs[bestScoreIndex].text]);
     }
   }
 

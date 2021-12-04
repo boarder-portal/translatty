@@ -5,20 +5,23 @@ import {
   IGetSubSubRequestParams,
 } from 'common/types/requests/getSub';
 
-import getParsedSubs from 'server/utilities/subs/getParsedSubs';
-import getSubPairs from 'server/utilities/subs/getSubPairs';
+import db from 'server/db/db';
 
 export default async function getSub(
   req: Request<unknown, unknown, unknown, IGetSubSubRequestParams>,
   res: Response,
 ) {
-  const { en: enSubs, ru: ruSubs } = await getParsedSubs({
-    name: 'howimetyourmother',
+  const subsKey = db.getSubKey({
+    serial: 'howimetyourmother',
     season: 1,
     episode: 1,
   });
 
-  const subPairs = getSubPairs(enSubs, ruSubs);
+  const subPairs = (await db.getParsedSubs())[subsKey];
+
+  if (!subPairs) {
+    throw new Error('No such subs in db');
+  }
 
   const response: IGetSubResponse =
     subPairs[Math.floor(Math.random() * subPairs.length)];

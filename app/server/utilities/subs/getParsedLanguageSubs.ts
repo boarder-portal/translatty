@@ -1,9 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import { ISub, ISubTime } from 'server/types/subs';
-
-const SUBS_DIR = '../../app/server/db/subs';
+import { ISub, ISubPath, ISubTime } from 'server/types/subs';
 
 function removeBOM(str: string): string {
   return str.charCodeAt(0) === 0xfeff ? str.substr(1) : str;
@@ -23,21 +21,17 @@ function parseTime(rawTime: string): number {
 }
 
 export default async function getParsedLanguageSubs({
-  name,
+  serial,
   season,
   episode,
   language,
-}: {
-  name: string;
-  season: number;
-  episode: number;
+}: ISubPath & {
   language: 'en' | 'ru';
 }) {
   const fileContent = removeBOM(
     await fs.readFile(
       path.resolve(
-        __dirname,
-        `${SUBS_DIR}/${name}/${season}/${episode}${language}.srt`,
+        `./app/server/db/subs/${serial}/${season}/${episode}${language}.srt`,
       ),
       'utf8',
     ),

@@ -1,12 +1,8 @@
-import { ISub } from 'server/types/subs';
+import { ISub, ISubPath } from 'server/types/subs';
 
 import getParsedLanguageSubs from 'server/utilities/subs/getParsedLanguageSubs';
 
-export default async function getParsedSubs(params: {
-  name: string;
-  season: number;
-  episode: number;
-}): Promise<{
+export default async function getParsedSubs(params: ISubPath): Promise<{
   en: ISub[];
   ru: ISub[];
 }> {

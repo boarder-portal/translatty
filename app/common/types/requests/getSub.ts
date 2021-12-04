@@ -1,5 +1,5 @@
-import { ISubPair } from 'server/types/subs';
+import { TSubPair } from 'server/types/subs';
 
 export interface IGetSubSubRequestParams {}
 
-export interface IGetSubResponse extends ISubPair {}
+export interface IGetSubResponse extends TSubPair {}

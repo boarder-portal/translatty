@@ -10,7 +10,12 @@ export interface ISub {
   text: string;
 }
 
-export interface ISubPair {
-  original: string;
-  translation: string;
+export type TSubOriginal = string;
+export type TSubTranslation = string;
+export type TSubPair = [TSubOriginal, TSubTranslation];
+
+export interface ISubPath {
+  serial: string;
+  season: string | number;
+  episode: string | number;
 }
