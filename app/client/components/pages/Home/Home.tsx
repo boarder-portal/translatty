@@ -1,15 +1,21 @@
-import { h, FunctionalComponent } from 'preact';
-import { memo, useCallback, useEffect, useState, JSX } from 'preact/compat';
+import {
+  FC,
+  FormEventHandler,
+  memo,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
 import { TSubPair } from 'server/types/subs';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
-import { Button, Container, Heading, Input } from 'boarder-components/dist/';
+import { Button, Container, Heading, Input } from 'boarder-components/dist';
 
 import cx from './Home.pcss';
 
-const Home: FunctionalComponent = () => {
+const Home: FC = () => {
   const [subPair, setSubPair] = useState<TSubPair | null>(null);
   const [userGuess, setUserGuess] = useState('');
   const [isOriginalDisplayed, setIsOriginalDisplayed] = useState(false);
@@ -27,7 +33,7 @@ const Home: FunctionalComponent = () => {
     setIsOriginalDisplayed(true);
   }, []);
 
-  const handleSubmit: JSX.GenericEventHandler<HTMLFormElement> = useCallback(
+  const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
     async (e) => {
       e.preventDefault();
 

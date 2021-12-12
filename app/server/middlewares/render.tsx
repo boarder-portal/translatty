@@ -1,20 +1,20 @@
+import { FC } from 'react';
 import path from 'path';
 import { Request, Response } from 'express';
-import renderToString from 'preact-render-to-string';
-import { h, FunctionalComponent } from 'preact';
 import { ChunkExtractor } from '@loadable/server';
-import { StaticRouter } from 'react-router-dom';
+import { StaticRouter } from 'react-router-dom/server';
+import { renderToString } from 'react-dom/server';
+
+import App from 'client/components/App/App';
 
 const statsFile = path.resolve('./build/client/loadable-stats.json');
 const extractor = new ChunkExtractor({ statsFile, publicPath: '/build' });
-
-import App from 'client/components/App/App';
 
 interface IServerAppProps {
   url: string;
 }
 
-const ServerApp: FunctionalComponent<IServerAppProps> = (props) => {
+const ServerApp: FC<IServerAppProps> = (props) => {
   const { url } = props;
 
   return (

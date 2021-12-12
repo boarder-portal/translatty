@@ -2,21 +2,19 @@ import 'regenerator-runtime/runtime';
 import '../../styles/reset.pcss';
 import 'boarder-components/dist/index.css';
 import './App.pcss';
-import { h, FunctionalComponent } from 'preact';
-import { Switch, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import loadable from '@loadable/component';
+import { FC } from 'react';
 
 const HomeLoadable = loadable(
   () => import('client/components/pages/Home/Home'),
 );
 
-const App: FunctionalComponent = () => {
+const App: FC = () => {
   return (
-    <Switch>
-      <Route exact path="/">
-        <HomeLoadable />
-      </Route>
-    </Switch>
+    <Routes>
+      <Route path="/" element={<HomeLoadable />} />
+    </Routes>
   );
 };
 

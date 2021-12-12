@@ -1,10 +1,6 @@
-if (process.env.NODE_ENV === 'development') {
-  require('preact/debug');
-}
-
-import { h, hydrate } from 'preact';
 import { loadableReady } from '@loadable/component';
 import { BrowserRouter } from 'react-router-dom';
+import { hydrate } from 'react-dom';
 
 import App from 'client/components/App/App';
 
