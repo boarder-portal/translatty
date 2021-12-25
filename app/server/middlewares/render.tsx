@@ -4,6 +4,12 @@ import { Request, Response } from 'express';
 import { ChunkExtractor } from '@loadable/server';
 import { StaticRouter } from 'react-router-dom/server';
 import { renderToString } from 'react-dom/server';
+import { RecoilRoot } from 'recoil';
+
+import getPageData, {
+  IPageData,
+} from 'server/middlewares/utilities/getPageData';
+import pageDataToRecoilState from 'common/utilities/pageDataToRecoilState';
 
 import App from 'client/components/App/App';
 
@@ -12,20 +18,27 @@ const extractor = new ChunkExtractor({ statsFile, publicPath: '/build' });
 
 interface IServerAppProps {
   url: string;
+  pageData: IPageData;
 }
 
 const ServerApp: FC<IServerAppProps> = (props) => {
-  const { url } = props;
+  const { url, pageData } = props;
 
   return (
     <StaticRouter location={url}>
-      <App />
+      <RecoilRoot initializeState={pageDataToRecoilState(pageData)}>
+        <App />
+      </RecoilRoot>
     </StaticRouter>
   );
 };
 
-export default function render(req: Request, res: Response) {
-  const jsx = extractor.collectChunks(<ServerApp url={req.url} />);
+export default async function render(req: Request, res: Response) {
+  const pageData = await getPageData(req);
+
+  const jsx = extractor.collectChunks(
+    <ServerApp url={req.url} pageData={pageData} />,
+  );
   const appHtml = renderToString(jsx);
 
   const linkTags = extractor.getLinkTags();
@@ -45,6 +58,7 @@ export default function render(req: Request, res: Response) {
         <link rel="manifest" href="/public/manifest.json" />
         ${linkTags}
         ${styleTags}
+        <script>window.initialRecoilState='${JSON.stringify(pageData)}'</script>
     </head>
 
     <body>

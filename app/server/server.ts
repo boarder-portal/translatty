@@ -1,3 +1,4 @@
+import 'regenerator-runtime/runtime';
 import express from 'express';
 import redis from 'redis';
 import connectRedis from 'connect-redis';
@@ -36,3 +37,9 @@ app.listen(3434, () =>
     '\nListening on port http://localhost:3434, with nginx - http://localhost:3535',
   ),
 );
+
+declare module 'express-session' {
+  interface SessionData {
+    login?: string;
+  }
+}

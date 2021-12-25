@@ -1,4 +1,12 @@
 import { IGetSubResponse } from 'common/types/requests/getSub';
+import {
+  IRegisterUserRequestParams,
+  IRegisterUserResponse,
+} from 'common/types/requests/registerUser';
+import {
+  ILoginUserRequestParams,
+  ILoginUserResponse,
+} from 'common/types/requests/loginUser';
 
 class HttpClient {
   async get(url: string, params?: any) {
@@ -18,6 +26,18 @@ class HttpClient {
     });
 
     return await rawResponse.json();
+  }
+
+  async registerUser(
+    params: IRegisterUserRequestParams,
+  ): Promise<IRegisterUserResponse> {
+    return this.post('/api/user/register', params);
+  }
+
+  async loginUser(
+    params: ILoginUserRequestParams,
+  ): Promise<ILoginUserResponse> {
+    return this.post('/api/user/login', params);
   }
 
   async getSub(): Promise<IGetSubResponse> {

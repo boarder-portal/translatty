@@ -1,9 +1,9 @@
-import path from 'path';
 import fs from 'fs-extra';
 
-import { TSubPair, ISubPath } from 'server/types/subs';
+import { ISubPath, TSubPair } from 'server/types/subs';
+import { IDBUser } from 'server/types/user';
 
-const DB_FOLDER_PATH = path.resolve('./DB');
+import { DB_FOLDER_PATH, USERS_DB_NAME } from 'server/db/constants';
 
 type TParsedSubs = Partial<Record<string, TSubPair[]>>;
 
@@ -17,6 +17,14 @@ class DB {
 
     await fs.mkdir(`${DB_FOLDER_PATH}`);
     await fs.writeJSON(`${DB_FOLDER_PATH}/parsedSubs.json`, {});
+  }
+
+  async getUsers(): Promise<IDBUser[]> {
+    return fs.readJSON(`${DB_FOLDER_PATH}/${USERS_DB_NAME}.json`);
+  }
+
+  async writeUsers(users: IDBUser[]): Promise<void> {
+    return fs.writeJSON(`${DB_FOLDER_PATH}/${USERS_DB_NAME}.json`, users);
   }
 
   getSubKey({ serial, season, episode }: ISubPath) {
