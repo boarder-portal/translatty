@@ -1,12 +1,10 @@
 import { memo, FC, useState, useCallback } from 'react';
-import { Flex } from 'boarder-components';
 import { useSetRecoilState } from 'recoil';
 import { userAtom } from 'common/atoms/userAtom';
 import { useNavigate } from 'react-router-dom';
+import { Button, Container, Heading, Input, Flex } from 'boarder-components';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
-
-import { Button, Container, Heading, Input } from 'boarder-components/dist';
 
 import cx from './Login.pcss';
 

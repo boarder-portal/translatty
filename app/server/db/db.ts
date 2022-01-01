@@ -2,8 +2,13 @@ import fs from 'fs-extra';
 
 import { ISubPath, TSubPair } from 'server/types/subs';
 import { IDBUser } from 'server/types/user';
+import { TDBCards } from 'server/types/db';
 
-import { DB_FOLDER_PATH, USERS_DB_NAME } from 'server/db/constants';
+import {
+  CARDS_DB_NAME,
+  DB_FOLDER_PATH,
+  USERS_DB_NAME,
+} from 'server/db/constants';
 
 type TParsedSubs = Partial<Record<string, TSubPair[]>>;
 
@@ -25,6 +30,14 @@ class DB {
 
   async writeUsers(users: IDBUser[]): Promise<void> {
     return fs.writeJSON(`${DB_FOLDER_PATH}/${USERS_DB_NAME}.json`, users);
+  }
+
+  async getCards(): Promise<TDBCards> {
+    return fs.readJSON(`${DB_FOLDER_PATH}/${CARDS_DB_NAME}.json`);
+  }
+
+  async writeCards(cards: TDBCards): Promise<void> {
+    return fs.writeJSON(`${DB_FOLDER_PATH}/${CARDS_DB_NAME}.json`, cards);
   }
 
   getSubKey({ serial, season, episode }: ISubPath) {

@@ -6,12 +6,11 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { Button, Container, Heading, Input } from 'boarder-components';
 
 import { TSubPair } from 'server/types/subs';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
-
-import { Button, Container, Heading, Input } from 'boarder-components/dist';
 
 import cx from './Subs.pcss';
 

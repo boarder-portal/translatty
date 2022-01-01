@@ -1,7 +1,7 @@
 import { memo, FC } from 'react';
+import { Container } from 'boarder-components';
 
 import Menu from 'client/components/pages/Home/components/Menu/Menu';
-import { Container } from 'boarder-components/dist';
 
 const Home: FC = () => {
   return (

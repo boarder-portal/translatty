@@ -32,5 +32,12 @@ export default async function register(
 
   await db.writeUsers([...users, newUser]);
 
+  const allCardsByUsers = await db.getCards();
+
+  await db.writeCards({
+    ...allCardsByUsers,
+    [newUser.login]: [],
+  });
+
   res.send({});
 }

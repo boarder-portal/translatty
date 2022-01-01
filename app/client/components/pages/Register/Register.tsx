@@ -1,9 +1,8 @@
 import { memo, FC, useState, useCallback } from 'react';
-import { Flex } from 'boarder-components';
+import { Button, Container, Heading, Input, Flex } from 'boarder-components';
+import { useNavigate } from 'react-router-dom';
 
 import HttpClient from 'client/utilities/HttpClient/HttpClient';
-
-import { Button, Container, Heading, Input } from 'boarder-components/dist';
 
 import cx from './Register.pcss';
 
@@ -11,13 +10,17 @@ const Register: FC = () => {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
 
+  const navigate = useNavigate();
+
   const handleRegister = useCallback(async () => {
     if (!login || !password) {
       return;
     }
 
     await HttpClient.registerUser({ login, password });
-  }, [password, login]);
+
+    navigate('/login');
+  }, [login, password, navigate]);
 
   return (
     <Container className={cx.root}>

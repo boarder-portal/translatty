@@ -1,8 +1,7 @@
 import { memo, FC } from 'react';
 import { Link } from 'react-router-dom';
-import { Flex } from 'boarder-components';
+import { Flex, Container, Heading } from 'boarder-components';
 
-import { Container, Heading } from 'boarder-components/dist';
 import UserActions from 'client/components/App/components/Head/components/UserActions/UserActions';
 
 import cx from './Head.pcss';

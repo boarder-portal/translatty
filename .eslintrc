@@ -121,13 +121,7 @@
     "guard-for-in": [
       "error"
     ],
-    "indent": [
-      "error",
-      2,
-      {
-        "SwitchCase": 1
-      }
-    ],
+    "indent": 0,
     "key-spacing": [
       "error",
       {

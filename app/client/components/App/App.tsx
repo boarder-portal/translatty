@@ -11,16 +11,20 @@ const HomeLoadable = loadable(
   () => import('client/components/pages/Home/Home'),
 );
 
-const SubsLoadable = loadable(
-  () => import('client/components/pages/Subs/Subs'),
-);
-
 const RegisterLoadable = loadable(
   () => import('client/components/pages/Register/Register'),
 );
 
 const LoginLoadable = loadable(
   () => import('client/components/pages/Login/Login'),
+);
+
+const CardsLoadable = loadable(
+  () => import('client/components/pages/Cards/Cards'),
+);
+
+const SubsLoadable = loadable(
+  () => import('client/components/pages/Subs/Subs'),
 );
 
 const App: FC = () => {
@@ -30,9 +34,10 @@ const App: FC = () => {
 
       <Routes>
         <Route path="/" element={<HomeLoadable />} />
-        <Route path="/subs" element={<SubsLoadable />} />
         <Route path="/register" element={<RegisterLoadable />} />
         <Route path="/login" element={<LoginLoadable />} />
+        <Route path="/cards/*" element={<CardsLoadable />} />
+        <Route path="/subs" element={<SubsLoadable />} />
       </Routes>
     </>
   );

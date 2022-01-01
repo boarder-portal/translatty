@@ -38,6 +38,24 @@ const MIGRATIONS: IMigration[] = [
       await fs.remove(`${DB_FOLDER_PATH}/users.json`);
     },
   },
+  {
+    version: 3,
+    async forward() {
+      const users = await fs.readJSON(`${DB_FOLDER_PATH}/users.json`);
+
+      await fs.writeJSON(
+        `${DB_FOLDER_PATH}/cards.json`,
+        users.reduce((accCards: any, user: any) => {
+          accCards[user.login] = [];
+
+          return accCards;
+        }, {}),
+      );
+    },
+    async backward() {
+      await fs.remove(`${DB_FOLDER_PATH}/cards.json`);
+    },
+  },
 ];
 
 (async () => {
