@@ -55,7 +55,7 @@ const Learn: FC<ILearnProps> = (props) => {
       return;
     }
 
-    if (suggestion !== currentCard.word) {
+    if (suggestion.toLowerCase() !== currentCard.word.toLowerCase()) {
       return;
     }
 
@@ -74,8 +74,8 @@ const Learn: FC<ILearnProps> = (props) => {
 
   return (
     <Flex direction="column" between={2}>
-      <Heading level={4}>{currentCard.definition}</Heading>
-      <Input value={suggestion} onInput={setSuggestion} />
+      <div>{currentCard.definition}</div>
+      <Input value={suggestion} disableAutoCorrect onInput={setSuggestion} />
       <Button onClick={checkCard}>Check</Button>
     </Flex>
   );
