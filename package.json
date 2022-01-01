@@ -42,7 +42,7 @@
     "@loadable/server": "^5.15.0",
     "@types/connect-redis": "0.0.14",
     "@types/redis": "^2.8.25",
-    "boarder-components": "^1.3.3",
+    "boarder-components": "^1.3.4",
     "connect-redis": "^5.0.0",
     "dayjs": "^1.10.4",
     "express": "^4.17.1",
