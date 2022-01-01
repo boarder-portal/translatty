@@ -1,5 +1,6 @@
 import { memo, FC, useState, useCallback } from 'react';
 import first from 'lodash/first';
+import shuffle from 'lodash/shuffle';
 import { Button, Flex, Heading, Input } from 'boarder-components';
 
 import { ICard } from 'common/types/cards';
@@ -36,7 +37,7 @@ function checkNeedToLearnCard(card: ICard): boolean {
 }
 
 function getInitialCardsToLearn(cards: ICard[]): ICard[] {
-  return cards.filter(checkNeedToLearnCard);
+  return shuffle(cards.filter(checkNeedToLearnCard));
 }
 
 const Learn: FC<ILearnProps> = (props) => {
