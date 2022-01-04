@@ -8,6 +8,8 @@ import { ICard } from 'common/types/cards';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
+import CardProgress from 'client/components/pages/Cards/components/Learn/components/CardProgress/CardProgress';
+
 import cx from './Learn.pcss';
 
 interface ILearnProps {
@@ -67,6 +69,18 @@ const Learn: FC<ILearnProps> = (props) => {
 
   const updateCurrentAndAllCards = useCallback(
     async (currentCardId: string, isCorrect: boolean) => {
+      if (!isCorrect) {
+        const lastReview = last(currentCard?.reviews);
+
+        if (lastReview && !lastReview.isCorrect) {
+          const timeSinceLastReview = Date.now() - lastReview.date;
+
+          if (timeSinceLastReview < 10 * MINUTE) {
+            return;
+          }
+        }
+      }
+
       const { cards: updatedCards } = await httpClient.reviewCard({
         id: currentCardId,
         isCorrect,
@@ -83,7 +97,7 @@ const Learn: FC<ILearnProps> = (props) => {
       setCardsToLearn((cards) => [updatedCard, ...cards.slice(1)]);
       setCards(updatedCards);
     },
-    [setCards],
+    [currentCard?.reviews, setCards],
   );
 
   const handleCheckCard = useCallback(async () => {
@@ -167,6 +181,10 @@ const Learn: FC<ILearnProps> = (props) => {
 
   return (
     <Flex direction="column" between={2}>
+      <CardProgress
+        reviews={currentCard.reviews.slice(-TIME_TO_REVIEW_AGAIN + 1)}
+      />
+
       <div>{currentCard.definition}</div>
 
       {nextCardButtonVisible ? (
