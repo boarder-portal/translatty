@@ -17,22 +17,20 @@ export default async function reviewCard(
     return res.status(401).send();
   }
 
-  const { word } = req.body;
+  const { id, isCorrect } = req.body;
 
   const allCards = await db.getCards();
   const userCards = allCards[login];
-  const wordToReview = userCards.find((card) => card.word === word);
+  const cardToReview = userCards.find((card) => card.id === id);
 
-  if (!wordToReview) {
+  if (!cardToReview) {
     return res.status(400);
   }
 
-  wordToReview.reviewedTimes++;
-  wordToReview.lastReviewedAt = Date.now();
-
-  if (wordToReview.reviewedTimes === 1 && !wordToReview.startLearnAt) {
-    wordToReview.startLearnAt = Date.now();
-  }
+  cardToReview.reviews.push({
+    date: Date.now(),
+    isCorrect,
+  });
 
   await db.writeCards(allCards);
 

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import uuid from 'uuid/v4';
 
 import {
   IAddCardRequestParams,
@@ -28,9 +29,8 @@ export default async function addCard(
       ...cardsByLogin[login],
       {
         ...newCardParams,
-        reviewedTimes: 0,
-        startLearnAt: null,
-        lastReviewedAt: null,
+        id: uuid(),
+        reviews: [],
       },
     ],
   };

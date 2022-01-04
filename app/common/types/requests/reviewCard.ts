@@ -1,7 +1,8 @@
 import { ICard } from 'common/types/cards';
 
 export interface IReviewCardRequestParams {
-  word: string;
+  id: string;
+  isCorrect: boolean;
 }
 
 export interface IReviewCardResponse {

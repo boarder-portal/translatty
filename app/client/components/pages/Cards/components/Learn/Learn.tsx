@@ -1,11 +1,14 @@
-import { memo, FC, useState, useCallback } from 'react';
+import { memo, FC, useState, useCallback, useRef, useMemo } from 'react';
 import first from 'lodash/first';
 import shuffle from 'lodash/shuffle';
-import { Button, Flex, Heading, Input } from 'boarder-components';
+import { Button, Flex, Input } from 'boarder-components';
+import last from 'lodash/last';
 
 import { ICard } from 'common/types/cards';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
+
+import cx from './Learn.pcss';
 
 interface ILearnProps {
   cards: ICard[];
@@ -31,9 +34,19 @@ const TIME_TO_REVIEW_AGAIN = [
 ];
 
 function checkNeedToLearnCard(card: ICard): boolean {
-  const timeLeftSinceLastReview = Date.now() - (card.lastReviewedAt || 0);
+  const lastReview = last(card.reviews);
 
-  return timeLeftSinceLastReview > TIME_TO_REVIEW_AGAIN[card.reviewedTimes];
+  if (!lastReview || !lastReview.isCorrect) {
+    return true;
+  }
+
+  const timeLeftSinceLastReview = Date.now() - (lastReview.date || 0);
+
+  const correctReviewsCount = card.reviews
+    .slice(-TIME_TO_REVIEW_AGAIN + 1)
+    .filter((card) => card.isCorrect).length;
+
+  return timeLeftSinceLastReview > TIME_TO_REVIEW_AGAIN[correctReviewsCount];
 }
 
 function getInitialCardsToLearn(cards: ICard[]): ICard[] {
@@ -47,26 +60,106 @@ const Learn: FC<ILearnProps> = (props) => {
     getInitialCardsToLearn(cards),
   );
   const [suggestion, setSuggestion] = useState('');
+  const [nextCardButtonVisible, setNextCardButtonVisible] = useState(false);
+  const suggestionInputRef = useRef<HTMLInputElement | null>(null);
 
   const currentCard = first(cardsToLearn) || null;
 
-  const checkCard = useCallback(async () => {
+  const updateCurrentAndAllCards = useCallback(
+    async (currentCardId: string, isCorrect: boolean) => {
+      const { cards: updatedCards } = await httpClient.reviewCard({
+        id: currentCardId,
+        isCorrect,
+      });
+
+      const updatedCard = updatedCards.find(
+        (card) => card.id === currentCardId,
+      );
+
+      if (!updatedCard) {
+        throw new Error('There are not updated card');
+      }
+
+      setCardsToLearn((cards) => [updatedCard, ...cards.slice(1)]);
+      setCards(updatedCards);
+    },
+    [setCards],
+  );
+
+  const handleCheckCard = useCallback(async () => {
+    if (!currentCard || !suggestion) {
+      return;
+    }
+
+    const isCorrect =
+      suggestion.toLowerCase() === currentCard.word.toLowerCase();
+
+    if (isCorrect) {
+      setNextCardButtonVisible(true);
+    }
+
+    await updateCurrentAndAllCards(currentCard.id, isCorrect);
+  }, [currentCard, suggestion, updateCurrentAndAllCards]);
+
+  const handleRememberCard = useCallback(async () => {
     if (!currentCard) {
       return;
     }
 
-    if (suggestion.toLowerCase() !== currentCard.word.toLowerCase()) {
+    setNextCardButtonVisible(true);
+
+    await updateCurrentAndAllCards(currentCard.id, true);
+  }, [currentCard, updateCurrentAndAllCards]);
+
+  const handleForgetCard = useCallback(async () => {
+    if (!currentCard) {
       return;
     }
 
-    const { cards: updatedCards } = await httpClient.reviewCard({
-      word: currentCard.word,
-    });
+    setNextCardButtonVisible(true);
 
+    await updateCurrentAndAllCards(currentCard.id, false);
+
+    setCardsToLearn((cards) => [...cards, cards[0]]);
+  }, [currentCard, updateCurrentAndAllCards]);
+
+  const handleNextClick = useCallback(() => {
+    setNextCardButtonVisible(false);
+    setCardsToLearn((cards) => cards.slice(1));
     setSuggestion('');
-    setCardsToLearn(cardsToLearn.slice(1));
-    setCards(updatedCards);
-  }, [cardsToLearn, currentCard, setCards, suggestion]);
+  }, []);
+
+  const actions = useMemo(() => {
+    if (nextCardButtonVisible) {
+      return <Button onClick={handleNextClick}>Next</Button>;
+    }
+
+    return (
+      <>
+        <Button onClick={handleCheckCard}>Check</Button>
+
+        <Flex between={2}>
+          <Button
+            className={cx.forgetButton}
+            type="danger"
+            onClick={handleForgetCard}
+          >
+            Forget
+          </Button>
+
+          <Button className={cx.rememberButton} onClick={handleRememberCard}>
+            Remember
+          </Button>
+        </Flex>
+      </>
+    );
+  }, [
+    handleCheckCard,
+    handleForgetCard,
+    handleNextClick,
+    handleRememberCard,
+    nextCardButtonVisible,
+  ]);
 
   if (!currentCard) {
     return <div>There are no cards to learn now</div>;
@@ -75,8 +168,19 @@ const Learn: FC<ILearnProps> = (props) => {
   return (
     <Flex direction="column" between={2}>
       <div>{currentCard.definition}</div>
-      <Input value={suggestion} disableAutoCorrect onInput={setSuggestion} />
-      <Button onClick={checkCard}>Check</Button>
+
+      {nextCardButtonVisible ? (
+        <div>{currentCard.word}</div>
+      ) : (
+        <Input
+          value={suggestion}
+          ref={suggestionInputRef}
+          disableAutoCorrect
+          onInput={setSuggestion}
+        />
+      )}
+
+      {actions}
     </Flex>
   );
 };

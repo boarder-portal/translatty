@@ -1,7 +1,11 @@
+export interface ICardReview {
+  isCorrect: boolean;
+  date: number;
+}
+
 export interface ICard {
+  id: string;
   word: string;
   definition: string;
-  reviewedTimes: number;
-  lastReviewedAt: number | null;
-  startLearnAt: number | null;
+  reviews: ICardReview[];
 }
