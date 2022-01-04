@@ -3,10 +3,12 @@ import first from 'lodash/first';
 import shuffle from 'lodash/shuffle';
 import { Button, Flex, Input } from 'boarder-components';
 import last from 'lodash/last';
+import dayjs from 'dayjs';
 
 import { ICard } from 'common/types/cards';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
+import isCardLearnedToday from 'client/components/pages/Cards/utilities/isCardLearnedToday';
 
 import CardProgress from 'client/components/pages/Cards/components/Learn/components/CardProgress/CardProgress';
 
@@ -35,24 +37,48 @@ const TIME_TO_REVIEW_AGAIN = [
   2 * MONTH,
 ];
 
-function checkNeedToLearnCard(card: ICard): boolean {
-  const lastReview = last(card.reviews);
+function getInitialCardsToLearn(cards: ICard[]): ICard[] {
+  const cardsToLearn: ICard[] = [];
 
-  if (!lastReview || !lastReview.isCorrect) {
-    return true;
+  const startOfDay = Number(dayjs().startOf('day'));
+
+  const todayCardsLearnedCount = cards.filter((card) =>
+    isCardLearnedToday(card, startOfDay),
+  ).length;
+
+  let cardsLeftToLearnCount = Math.max(10 - todayCardsLearnedCount, 0);
+
+  for (const card of cards) {
+    const lastReview = last(card.reviews);
+
+    if (!lastReview) {
+      if (cardsLeftToLearnCount > 0) {
+        cardsLeftToLearnCount--;
+
+        cardsToLearn.push(card);
+      }
+
+      continue;
+    }
+
+    if (!lastReview.isCorrect) {
+      cardsToLearn.push(card);
+
+      continue;
+    }
+
+    const timeLeftSinceLastReview = Date.now() - (lastReview.date || 0);
+
+    const correctReviewsCount = card.reviews
+      .slice(-TIME_TO_REVIEW_AGAIN + 1)
+      .filter((card) => card.isCorrect).length;
+
+    if (timeLeftSinceLastReview > TIME_TO_REVIEW_AGAIN[correctReviewsCount]) {
+      cardsToLearn.push(card);
+    }
   }
 
-  const timeLeftSinceLastReview = Date.now() - (lastReview.date || 0);
-
-  const correctReviewsCount = card.reviews
-    .slice(-TIME_TO_REVIEW_AGAIN + 1)
-    .filter((card) => card.isCorrect).length;
-
-  return timeLeftSinceLastReview > TIME_TO_REVIEW_AGAIN[correctReviewsCount];
-}
-
-function getInitialCardsToLearn(cards: ICard[]): ICard[] {
-  return shuffle(cards.filter(checkNeedToLearnCard));
+  return shuffle(cardsToLearn);
 }
 
 const Learn: FC<ILearnProps> = (props) => {

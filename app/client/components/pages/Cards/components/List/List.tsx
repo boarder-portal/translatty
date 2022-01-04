@@ -1,11 +1,10 @@
 import { memo, FC, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Flex } from 'boarder-components';
-import dayjs from 'dayjs';
-import first from 'lodash/first';
-import last from 'lodash/last';
 
 import { ICard } from 'common/types/cards';
+
+import getTodayStats from 'client/components/pages/Cards/utilities/getTodayStats';
 
 import cx from './List.pcss';
 
@@ -18,37 +17,7 @@ const List: FC<IListProps> = (props) => {
 
   const navigate = useNavigate();
 
-  const todayStats = useMemo(() => {
-    const startOfDay = Number(dayjs().startOf('day'));
-
-    const newCards: ICard[] = [];
-    const reviewedCards: ICard[] = [];
-
-    for (const card of cards) {
-      const startLearnAt = first(card.reviews)?.date;
-
-      if (startLearnAt && startLearnAt >= startOfDay) {
-        newCards.push(card);
-
-        continue;
-      }
-
-      const lastReview = last(card.reviews);
-
-      if (!lastReview) {
-        continue;
-      }
-
-      if (lastReview.date >= startOfDay) {
-        reviewedCards.push(card);
-      }
-    }
-
-    return {
-      new: newCards,
-      reviewed: reviewedCards,
-    };
-  }, [cards]);
+  const todayStats = useMemo(() => getTodayStats(cards), [cards]);
 
   const handleAddCardClick = useCallback(() => {
     navigate('/cards/add');
