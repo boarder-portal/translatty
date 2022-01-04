@@ -72,7 +72,11 @@ const Learn: FC<ILearnProps> = (props) => {
       if (!isCorrect) {
         const lastReview = last(currentCard?.reviews);
 
-        if (lastReview && !lastReview.isCorrect) {
+        if (!lastReview) {
+          return;
+        }
+
+        if (!lastReview.isCorrect) {
           const timeSinceLastReview = Date.now() - lastReview.date;
 
           if (timeSinceLastReview < 10 * MINUTE) {

@@ -1,8 +1,9 @@
 import { memo, FC, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Heading, Flex } from 'boarder-components';
+import { Button, Flex } from 'boarder-components';
 import dayjs from 'dayjs';
 import first from 'lodash/first';
+import last from 'lodash/last';
 
 import { ICard } from 'common/types/cards';
 
@@ -17,14 +18,36 @@ const List: FC<IListProps> = (props) => {
 
   const navigate = useNavigate();
 
-  const todayNewWordsCount = useMemo(() => {
+  const todayStats = useMemo(() => {
     const startOfDay = Number(dayjs().startOf('day'));
 
-    return cards.filter((card) => {
+    const newCards: ICard[] = [];
+    const reviewedCards: ICard[] = [];
+
+    for (const card of cards) {
       const startLearnAt = first(card.reviews)?.date;
 
-      return startLearnAt && startLearnAt >= startOfDay;
-    }).length;
+      if (startLearnAt && startLearnAt >= startOfDay) {
+        newCards.push(card);
+
+        continue;
+      }
+
+      const lastReview = last(card.reviews);
+
+      if (!lastReview) {
+        continue;
+      }
+
+      if (lastReview.date >= startOfDay) {
+        reviewedCards.push(card);
+      }
+    }
+
+    return {
+      new: newCards,
+      reviewed: reviewedCards,
+    };
   }, [cards]);
 
   const handleAddCardClick = useCallback(() => {
@@ -36,15 +59,14 @@ const List: FC<IListProps> = (props) => {
   }, [navigate]);
 
   return (
-    <Flex direction="column" between={2}>
-      <Heading level={1}>Cards</Heading>
-
-      <div>{`New words today: ${todayNewWordsCount}`}</div>
+    <Flex className={cx.root} direction="column" between={2}>
+      <div>{`New today: ${todayStats.new.length} / 10`}</div>
+      <div>{`Reviewed today: ${todayStats.reviewed.length}`}</div>
 
       <Flex direction="column" between={2}>
         {cards.length
           ? cards.map((card) => <div key={card.id}>{card.word}</div>)
-          : 'There is no cards yet'}
+          : 'There are no cards yet'}
       </Flex>
 
       <Flex className={cx.actions} direction="column" between={2}>
