@@ -211,9 +211,11 @@ const Learn: FC<ILearnProps> = (props) => {
 
   return (
     <Flex direction="column" between={2}>
-      <CardProgress
-        reviews={currentCard.reviews.slice(-TIME_TO_REVIEW_AGAIN + 1)}
-      />
+      {nextCardButtonVisible && (
+        <CardProgress
+          reviews={currentCard.reviews.slice(-TIME_TO_REVIEW_AGAIN + 1)}
+        />
+      )}
 
       <div>{currentCard.definition}</div>
 
