@@ -1,5 +1,5 @@
 import { memo, FC, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, Flex } from 'boarder-components';
 
 import { ICard } from 'common/types/cards';
@@ -34,7 +34,11 @@ const List: FC<IListProps> = (props) => {
 
       <Flex direction="column" between={2}>
         {cards.length
-          ? cards.map((card) => <div key={card.id}>{card.word}</div>)
+          ? cards.map((card) => (
+              <Link key={card.id} to={`/cards/card/${card.id}`}>
+                {card.word}
+              </Link>
+            ))
           : 'There are no cards yet'}
       </Flex>
 

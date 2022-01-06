@@ -1,4 +1,4 @@
-import { memo, FC, useState, useCallback, useRef, useMemo } from 'react';
+import { FC, memo, useCallback, useMemo, useRef, useState } from 'react';
 import first from 'lodash/first';
 import shuffle from 'lodash/shuffle';
 import { Button, Flex, Input } from 'boarder-components';
@@ -9,8 +9,13 @@ import { ICard } from 'common/types/cards';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 import isCardLearnedToday from 'client/components/pages/Cards/utilities/isCardLearnedToday';
+import getCardLastReviewsDiff from 'client/components/pages/Cards/utilities/getCardLastReviewsDiff';
 
-import CardProgress from 'client/components/pages/Cards/components/Learn/components/CardProgress/CardProgress';
+import CardProgress from 'client/components/pages/Cards/components/CardProgress/CardProgress';
+import {
+  MINUTE,
+  TIME_TO_REVIEW_AGAIN,
+} from 'client/components/pages/Cards/constants';
 
 import cx from './Learn.pcss';
 
@@ -18,24 +23,6 @@ interface ILearnProps {
   cards: ICard[];
   setCards(cards: ICard[]): void;
 }
-
-const MINUTE = 60 * 1000;
-const HOUR = 60 * MINUTE;
-const DAY = 24 * HOUR;
-const WEEK = 7 * DAY;
-const MONTH = 30 * DAY;
-
-const TIME_TO_REVIEW_AGAIN = [
-  0,
-  30 * MINUTE,
-  2 * HOUR,
-  DAY,
-  3 * DAY,
-  WEEK,
-  2 * WEEK,
-  MONTH,
-  2 * MONTH,
-];
 
 function getInitialCardsToLearn(cards: ICard[]): ICard[] {
   const cardsToLearn: ICard[] = [];
@@ -69,11 +56,9 @@ function getInitialCardsToLearn(cards: ICard[]): ICard[] {
 
     const timeLeftSinceLastReview = Date.now() - (lastReview.date || 0);
 
-    const correctReviewsCount = card.reviews
-      .slice(-TIME_TO_REVIEW_AGAIN + 1)
-      .filter((card) => card.isCorrect).length;
+    const reviewsDiff = getCardLastReviewsDiff(card);
 
-    if (timeLeftSinceLastReview > TIME_TO_REVIEW_AGAIN[correctReviewsCount]) {
+    if (timeLeftSinceLastReview > TIME_TO_REVIEW_AGAIN[reviewsDiff]) {
       cardsToLearn.push(card);
     }
   }
