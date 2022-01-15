@@ -1,7 +1,7 @@
 import { FC, memo, useCallback, useMemo, useRef, useState } from 'react';
 import first from 'lodash/first';
 import shuffle from 'lodash/shuffle';
-import { Button, Flex, Input } from 'boarder-components';
+import { Button, Flex, Heading, Input } from 'boarder-components';
 import last from 'lodash/last';
 import dayjs from 'dayjs';
 
@@ -56,7 +56,7 @@ function getInitialCardsToLearn(cards: ICard[]): ICard[] {
 
     const timeLeftSinceLastReview = Date.now() - (lastReview.date || 0);
 
-    const reviewsDiff = getCardLastReviewsDiff(card);
+    const reviewsDiff = Math.max(getCardLastReviewsDiff(card), 1);
 
     if (timeLeftSinceLastReview > TIME_TO_REVIEW_AGAIN[reviewsDiff]) {
       cardsToLearn.push(card);
@@ -64,6 +64,10 @@ function getInitialCardsToLearn(cards: ICard[]): ICard[] {
   }
 
   return shuffle(cardsToLearn);
+}
+
+function getNewCards(cards: ICard[]): ICard[] {
+  return cards.filter((card) => card.reviews.length === 0);
 }
 
 const Learn: FC<ILearnProps> = (props) => {
@@ -78,21 +82,21 @@ const Learn: FC<ILearnProps> = (props) => {
 
   const currentCard = first(cardsToLearn) || null;
 
+  const additionalNewCards = useMemo(() => {
+    if (cardsToLearn.length > 0) {
+      return [];
+    }
+
+    return getNewCards(cards);
+  }, [cards, cardsToLearn.length]);
+
   const updateCurrentAndAllCards = useCallback(
     async (currentCardId: string, isCorrect: boolean) => {
       if (!isCorrect) {
         const lastReview = last(currentCard?.reviews);
 
-        if (!lastReview) {
+        if (!lastReview || !lastReview.isCorrect) {
           return;
-        }
-
-        if (!lastReview.isCorrect) {
-          const timeSinceLastReview = Date.now() - lastReview.date;
-
-          if (timeSinceLastReview < 10 * MINUTE) {
-            return;
-          }
         }
       }
 
@@ -158,6 +162,10 @@ const Learn: FC<ILearnProps> = (props) => {
     setSuggestion('');
   }, []);
 
+  const handleLearnAdditionalNewWords = useCallback(() => {
+    setCardsToLearn(shuffle(additionalNewCards.slice(0, 5)));
+  }, [additionalNewCards]);
+
   const actions = useMemo(() => {
     if (nextCardButtonVisible) {
       return <Button onClick={handleNextClick}>Next</Button>;
@@ -167,19 +175,13 @@ const Learn: FC<ILearnProps> = (props) => {
       <>
         <Button onClick={handleCheckCard}>Check</Button>
 
-        <Flex between={2}>
-          <Button
-            className={cx.forgetButton}
-            type="danger"
-            onClick={handleForgetCard}
-          >
+        <div className={cx.forgetAndRememberActions}>
+          <Button type="danger" onClick={handleForgetCard}>
             Forget
           </Button>
 
-          <Button className={cx.rememberButton} onClick={handleRememberCard}>
-            Remember
-          </Button>
-        </Flex>
+          <Button onClick={handleRememberCard}>Remember</Button>
+        </div>
       </>
     );
   }, [
@@ -190,13 +192,41 @@ const Learn: FC<ILearnProps> = (props) => {
     nextCardButtonVisible,
   ]);
 
+  if (additionalNewCards.length) {
+    return (
+      <Flex direction="column" between={2}>
+        <Heading level={1}>Great job!</Heading>
+
+        <div>Want to learn more new words?</div>
+
+        <Button onClick={handleLearnAdditionalNewWords}>Learn</Button>
+      </Flex>
+    );
+  }
+
+  if (!cards.length) {
+    return (
+      <Flex direction="column" between={2}>
+        <Heading level={1}>No words :(</Heading>
+
+        <div>Add new words and come back!</div>
+      </Flex>
+    );
+  }
+
   if (!currentCard) {
-    return <div>There are no cards to learn now</div>;
+    return (
+      <Flex direction="column" between={2}>
+        <Heading level={1}>Great job!</Heading>
+
+        <div>You have learned all words for today. Come back later.</div>
+      </Flex>
+    );
   }
 
   return (
     <Flex direction="column" between={2}>
-      {nextCardButtonVisible && (
+      {(nextCardButtonVisible || currentCard.reviews.length === 0) && (
         <CardProgress
           reviews={currentCard.reviews.slice(-TIME_TO_REVIEW_AGAIN + 1)}
         />
