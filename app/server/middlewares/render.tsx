@@ -52,9 +52,11 @@ export default async function render(req: Request, res: Response) {
         <meta charset="UTF-8">
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, maximum-scale=1, user-scalable=0">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#ffffff">
         <link rel="apple-touch-icon" sizes="180x180" href="/public/apple-touch-icon.png?v=2">
         <link rel="icon" type="image/x-icon" href="/public/favicon.ico?v=2">
-        <link rel="manifest" href="/public/manifest.json" />
+        <link rel="manifest" href="/public/manifest.json?v=2" />
         ${linkTags}
         ${styleTags}
         <script>window.initialRecoilState='${JSON.stringify(pageData)}'</script>
