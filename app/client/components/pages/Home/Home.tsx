@@ -1,12 +1,14 @@
 import { memo, FC } from 'react';
-import { Container } from 'boarder-components';
-
-import Menu from 'client/components/pages/Home/components/Menu/Menu';
+import { Container, Flex, Heading } from 'boarder-components';
 
 const Home: FC = () => {
   return (
     <Container>
-      <Menu />
+      <Flex direction="column" between={2}>
+        <Heading level={1}>Hi! 👋</Heading>
+
+        <div>Let's learn some english</div>
+      </Flex>
     </Container>
   );
 };

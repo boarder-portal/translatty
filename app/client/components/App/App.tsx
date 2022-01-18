@@ -5,7 +5,7 @@ import { FC } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import loadable from '@loadable/component';
 
-import Head from 'client/components/App/components/Head/Head';
+import FooterMenu from 'client/components/App/components/FooterMenu/FooterMenu';
 
 const HomeLoadable = loadable(
   () => import('client/components/pages/Home/Home'),
@@ -30,8 +30,6 @@ const SubsLoadable = loadable(
 const App: FC = () => {
   return (
     <>
-      <Head />
-
       <Routes>
         <Route path="/" element={<HomeLoadable />} />
         <Route path="/register" element={<RegisterLoadable />} />
@@ -39,6 +37,8 @@ const App: FC = () => {
         <Route path="/cards/*" element={<CardsLoadable />} />
         <Route path="/subs" element={<SubsLoadable />} />
       </Routes>
+
+      <FooterMenu />
     </>
   );
 };
