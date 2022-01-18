@@ -48,14 +48,12 @@ export default async function render(req: Request, res: Response) {
   return res.send(`
 <html>
     <head>
-        <title>Translatty</title>
+        <title>Engly</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, maximum-scale=1, user-scalable=0">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <link rel="apple-touch-icon" sizes="180x180" href="/public/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/public/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/public/favicon-16x16.png">
-        <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
+        <link rel="apple-touch-icon" sizes="180x180" href="/public/apple-touch-icon.png?v=2">
+        <link rel="icon" type="image/x-icon" href="/public/favicon.ico?v=2">
         <link rel="manifest" href="/public/manifest.json" />
         ${linkTags}
         ${styleTags}
