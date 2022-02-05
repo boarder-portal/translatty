@@ -4,6 +4,7 @@ import shuffle from 'lodash/shuffle';
 import { Button, Flex, Heading, Input } from 'boarder-components';
 import last from 'lodash/last';
 import dayjs from 'dayjs';
+import { Link } from 'react-router-dom';
 
 import { ICard } from 'common/types/cards';
 
@@ -226,6 +227,12 @@ const Learn: FC<ILearnProps> = (props) => {
 
   return (
     <Flex direction="column" between={2}>
+      {nextCardButtonVisible && (
+        <Flex justifyContent="flexEnd">
+          <Link to={`/cards/card/${currentCard.id}/edit`}>Edit</Link>
+        </Flex>
+      )}
+
       {(nextCardButtonVisible || currentCard.reviews.length === 0) && (
         <CardProgress reviews={currentCard.reviews} />
       )}
