@@ -16,6 +16,10 @@ import {
   IReviewCardRequestParams,
   IReviewCardResponse,
 } from 'common/types/requests/reviewCard';
+import {
+  IEditCardRequestParams,
+  IEditCardResponse,
+} from 'common/types/requests/editCard';
 
 class HttpClient {
   async get(url: string, params?: any) {
@@ -59,6 +63,10 @@ class HttpClient {
 
   async addCard(params: IAddCardRequestParams): Promise<IAddCardResponse> {
     return this.post('/api/cards/add', params);
+  }
+
+  async editCard(params: IEditCardRequestParams): Promise<IEditCardResponse> {
+    return this.post('/api/cards/edit', params);
   }
 
   async reviewCard(

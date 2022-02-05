@@ -10,6 +10,7 @@ import List from 'client/components/pages/Cards/components/List/List';
 import AddCard from 'client/components/pages/Cards/components/AddCard/AddCard';
 import Learn from 'client/components/pages/Cards/components/Learn/Learn';
 import Card from 'client/components/pages/Cards/components/Card/Card';
+import EditCard from 'client/components/pages/Cards/components/EditCard/EditCard';
 
 const Cards: FC = () => {
   const [cards, setCards] = useState<ICard[] | null>(null);
@@ -37,8 +38,12 @@ const Cards: FC = () => {
         />
 
         <Route path="/add" element={<AddCard setCards={setCards} />} />
-
         <Route path="/card/:id" element={<Card cards={cards} />} />
+
+        <Route
+          path="/card/:id/edit"
+          element={<EditCard cards={cards} setCards={setCards} />}
+        />
       </Routes>
     );
   }, [cards]);
