@@ -1,4 +1,4 @@
-import { memo, FC } from 'react';
+import { memo, FC, useMemo } from 'react';
 import { Flex } from 'boarder-components';
 import classNames from 'classnames';
 
@@ -15,10 +15,15 @@ interface ICardProgressProps {
 const CardProgress: FC<ICardProgressProps> = (props) => {
   const { reviews } = props;
 
+  const lastReviews = useMemo(
+    () => reviews.slice(-TIME_TO_REVIEW_AGAIN + 1),
+    [reviews],
+  );
+
   return (
     <Flex between={1}>
-      {reviews.slice(-TIME_TO_REVIEW_AGAIN + 1).length
-        ? reviews.map((review, index) => (
+      {lastReviews.length
+        ? lastReviews.map((review, index) => (
             <div
               key={index}
               className={classNames(

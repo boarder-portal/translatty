@@ -227,9 +227,7 @@ const Learn: FC<ILearnProps> = (props) => {
   return (
     <Flex direction="column" between={2}>
       {(nextCardButtonVisible || currentCard.reviews.length === 0) && (
-        <CardProgress
-          reviews={currentCard.reviews.slice(-TIME_TO_REVIEW_AGAIN + 1)}
-        />
+        <CardProgress reviews={currentCard.reviews} />
       )}
 
       <div>{currentCard.definition}</div>
