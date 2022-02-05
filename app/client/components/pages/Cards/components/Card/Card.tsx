@@ -67,6 +67,13 @@ const Card: FC<ICardProps> = (props) => {
 
       <div>{card.definition}</div>
 
+      {card.examples.length ? (
+        <Flex direction="column" between={2}>
+          <Heading level={5}>Examples</Heading>
+          <div>{card.examples.join('\n')}</div>
+        </Flex>
+      ) : null}
+
       <div className={cx.nextReview}>{nextReview}</div>
 
       <Button onClick={handleEditClick}>Edit</Button>

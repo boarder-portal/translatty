@@ -7,5 +7,6 @@ export interface ICard {
   id: string;
   word: string;
   definition: string;
+  examples: string[];
   reviews: ICardReview[];
 }

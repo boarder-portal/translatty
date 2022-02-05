@@ -235,7 +235,13 @@ const Learn: FC<ILearnProps> = (props) => {
       <div>{currentCard.definition}</div>
 
       {nextCardButtonVisible ? (
-        <div>{currentCard.word}</div>
+        <>
+          <div>{currentCard.word}</div>
+
+          {currentCard.examples.length ? (
+            <div>{currentCard.examples.join('\n')}</div>
+          ) : null}
+        </>
       ) : (
         <Input
           value={suggestion}

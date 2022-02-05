@@ -14,6 +14,7 @@ const AddCard: FC<IAddCardProps> = (props) => {
 
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
+  const [example, setExample] = useState('');
 
   const addCard = useCallback(async () => {
     if (!word || !definition) {
@@ -23,13 +24,15 @@ const AddCard: FC<IAddCardProps> = (props) => {
     const { cards: updatedCards } = await httpClient.addCard({
       word,
       definition,
+      examples: example ? [example] : [],
     });
 
     setWord('');
     setDefinition('');
+    setExample('');
 
     setCards(updatedCards);
-  }, [definition, setCards, word]);
+  }, [definition, example, setCards, word]);
 
   return (
     <Flex direction="column" between={2}>
@@ -42,6 +45,8 @@ const AddCard: FC<IAddCardProps> = (props) => {
         placeholder="definition"
         onInput={setDefinition}
       />
+
+      <Input value={example} placeholder="example" onInput={setExample} />
 
       <Button onClick={addCard}>Add word</Button>
     </Flex>

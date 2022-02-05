@@ -22,6 +22,7 @@ const EditCard: FC<IEditCardProps> = (props) => {
 
   const [word, setWord] = useState(card?.word || '');
   const [definition, setDefinition] = useState(card?.definition || '');
+  const [example, setExample] = useState(card?.examples[0] || '');
 
   const editCard = useCallback(async () => {
     if (!card) {
@@ -32,6 +33,7 @@ const EditCard: FC<IEditCardProps> = (props) => {
       id: card.id,
       word,
       definition,
+      examples: example ? [example] : [],
     });
 
     const cardIndex = cards.findIndex((c) => c.id === updatedCard.id);
@@ -47,7 +49,7 @@ const EditCard: FC<IEditCardProps> = (props) => {
     ]);
 
     navigate(`/cards/card/${updatedCard.id}`);
-  }, [card, cards, definition, navigate, setCards, word]);
+  }, [card, cards, definition, example, navigate, setCards, word]);
 
   return (
     <Flex direction="column" between={2}>
@@ -60,6 +62,8 @@ const EditCard: FC<IEditCardProps> = (props) => {
         placeholder="definition"
         onInput={setDefinition}
       />
+
+      <Input value={example} placeholder="example" onInput={setExample} />
 
       <Button onClick={editCard}>Edit</Button>
     </Flex>

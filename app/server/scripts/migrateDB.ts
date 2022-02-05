@@ -100,6 +100,31 @@ const MIGRATIONS: IMigration[] = [
       await fs.writeJSON(`${DB_FOLDER_PATH}/cards.json`, cardsByUsers);
     },
   },
+  {
+    version: 5,
+    async forward() {
+      const cardsByUsers = await fs.readJSON(`${DB_FOLDER_PATH}/cards.json`);
+
+      Object.values<any[]>(cardsByUsers).forEach((userCards) => {
+        userCards.forEach((card) => {
+          card.examples = [];
+        });
+      });
+
+      await fs.writeJSON(`${DB_FOLDER_PATH}/cards.json`, cardsByUsers);
+    },
+    async backward() {
+      const cardsByUsers = await fs.readJSON(`${DB_FOLDER_PATH}/cards.json`);
+
+      Object.values<any[]>(cardsByUsers).forEach((userCards) => {
+        userCards.forEach((card) => {
+          delete card.examples;
+        });
+      });
+
+      await fs.writeJSON(`${DB_FOLDER_PATH}/cards.json`, cardsByUsers);
+    },
+  },
 ];
 
 (async () => {

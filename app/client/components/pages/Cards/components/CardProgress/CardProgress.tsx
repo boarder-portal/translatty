@@ -4,6 +4,8 @@ import classNames from 'classnames';
 
 import { ICardReview } from 'common/types/cards';
 
+import { TIME_TO_REVIEW_AGAIN } from 'client/components/pages/Cards/constants';
+
 import cx from './CardProgress.pcss';
 
 interface ICardProgressProps {
@@ -15,7 +17,7 @@ const CardProgress: FC<ICardProgressProps> = (props) => {
 
   return (
     <Flex between={1}>
-      {reviews.length
+      {reviews.slice(-TIME_TO_REVIEW_AGAIN + 1).length
         ? reviews.map((review, index) => (
             <div
               key={index}
