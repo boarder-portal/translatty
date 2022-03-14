@@ -16,7 +16,7 @@ const CardProgress: FC<ICardProgressProps> = (props) => {
   const { reviews } = props;
 
   const lastReviews = useMemo(
-    () => reviews.slice(-TIME_TO_REVIEW_AGAIN + 1),
+    () => reviews.slice(-(TIME_TO_REVIEW_AGAIN.length - 1)),
     [reviews],
   );
 

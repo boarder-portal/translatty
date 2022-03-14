@@ -27,6 +27,10 @@ const List: FC<IListProps> = (props) => {
     navigate('/cards/learn');
   }, [navigate]);
 
+  const handleQuizClick = useCallback(() => {
+    navigate('/cards/quiz');
+  }, [navigate]);
+
   return (
     <Flex className={cx.root} direction="column" between={2}>
       <div>{`New today: ${todayStats.new.length} / 10`}</div>
@@ -49,6 +53,10 @@ const List: FC<IListProps> = (props) => {
 
         <Button className={cx.learnButton} onClick={handleLearnClick}>
           Learn
+        </Button>
+
+        <Button className={cx.quizButton} onClick={handleQuizClick}>
+          Quiz
         </Button>
       </Flex>
     </Flex>

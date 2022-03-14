@@ -13,10 +13,7 @@ import isCardLearnedToday from 'client/components/pages/Cards/utilities/isCardLe
 import getCardLastReviewsDiff from 'client/components/pages/Cards/utilities/getCardLastReviewsDiff';
 
 import CardProgress from 'client/components/pages/Cards/components/CardProgress/CardProgress';
-import {
-  MINUTE,
-  TIME_TO_REVIEW_AGAIN,
-} from 'client/components/pages/Cards/constants';
+import { TIME_TO_REVIEW_AGAIN } from 'client/components/pages/Cards/constants';
 
 import cx from './Learn.pcss';
 
