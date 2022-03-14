@@ -5,6 +5,7 @@ import shuffle from 'lodash/shuffle';
 import { ICard } from 'common/types/cards';
 
 import { TIME_TO_REVIEW_AGAIN } from 'client/components/pages/Cards/constants';
+import CardProgress from 'client/components/pages/Cards/components/CardProgress/CardProgress';
 
 interface IQuizProps {
   cards: ICard[];
@@ -64,6 +65,8 @@ const Quiz: FC<IQuizProps> = (props) => {
   return (
     <Flex direction="column" between={2}>
       <Heading level={1}>{currentCard.word}</Heading>
+
+      <CardProgress reviews={currentCard.reviews} />
 
       {answers.map((answer, index) => {
         return (
