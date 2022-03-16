@@ -4,7 +4,7 @@
     "target": "es2017",
     "strict": true,
     "outDir": "./dist",
-    "lib": ["dom"],
+    "lib": ["dom", "dom.iterable"],
     "jsx": "react-jsx",
     "sourceMap": true,
     "moduleResolution": "node",

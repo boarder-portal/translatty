@@ -5,6 +5,8 @@ import { ICard } from 'common/types/cards';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
+import useQuery from 'client/hooks/useQuery';
+
 interface IAddCardProps {
   setCards(cards: ICard[]): void;
 }
@@ -12,7 +14,9 @@ interface IAddCardProps {
 const AddCard: FC<IAddCardProps> = (props) => {
   const { setCards } = props;
 
-  const [word, setWord] = useState('');
+  const { word: wordFromQuery } = useQuery();
+
+  const [word, setWord] = useState(wordFromQuery || '');
   const [definition, setDefinition] = useState('');
   const [example, setExample] = useState('');
 

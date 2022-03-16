@@ -36,6 +36,8 @@ const List: FC<IListProps> = (props) => {
       <div>{`New today: ${todayStats.new.length} / 10`}</div>
       <div>{`Reviewed today: ${todayStats.reviewed.length}`}</div>
 
+      <Link to="/cards/popularWords">Popular words</Link>
+
       <Flex direction="column" between={2}>
         {cards.length
           ? cards.map((card) => (
