@@ -34,7 +34,6 @@ const AddCard: FC<IAddCardProps> = (props) => {
     setWord('');
     setDefinition('');
     setExample('');
-
     setCards(updatedCards);
   }, [definition, example, setCards, word]);
 

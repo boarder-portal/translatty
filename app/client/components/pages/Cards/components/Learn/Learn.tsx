@@ -3,69 +3,21 @@ import first from 'lodash/first';
 import shuffle from 'lodash/shuffle';
 import { Button, Flex, Heading, Input } from 'boarder-components';
 import last from 'lodash/last';
-import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 
 import { ICard } from 'common/types/cards';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
-import isCardLearnedToday from 'client/components/pages/Cards/utilities/isCardLearnedToday';
-import getCardLastReviewsDiff from 'client/components/pages/Cards/utilities/getCardLastReviewsDiff';
+import getInitialCardsToLearn from 'client/components/pages/Cards/components/Learn/utilities/getInitialCardsToLearn';
+import getNewCards from 'client/components/pages/Cards/components/Learn/utilities/getNewCards';
 
 import CardProgress from 'client/components/pages/Cards/components/CardProgress/CardProgress';
-import { TIME_TO_REVIEW_AGAIN } from 'client/components/pages/Cards/constants';
 
 import cx from './Learn.pcss';
 
 interface ILearnProps {
   cards: ICard[];
   setCards(cards: ICard[]): void;
-}
-
-function getInitialCardsToLearn(cards: ICard[]): ICard[] {
-  const cardsToLearn: ICard[] = [];
-
-  const startOfDay = Number(dayjs().startOf('day'));
-
-  const todayCardsLearnedCount = cards.filter((card) =>
-    isCardLearnedToday(card, startOfDay),
-  ).length;
-
-  let cardsLeftToLearnCount = Math.max(10 - todayCardsLearnedCount, 0);
-
-  for (const card of cards) {
-    const lastReview = last(card.reviews);
-
-    if (!lastReview) {
-      if (cardsLeftToLearnCount > 0) {
-        cardsLeftToLearnCount--;
-
-        cardsToLearn.push(card);
-      }
-
-      continue;
-    }
-
-    if (!lastReview.isCorrect) {
-      cardsToLearn.push(card);
-
-      continue;
-    }
-
-    const timeLeftSinceLastReview = Date.now() - (lastReview.date || 0);
-
-    const reviewsDiff = Math.max(getCardLastReviewsDiff(card), 1);
-
-    if (timeLeftSinceLastReview > TIME_TO_REVIEW_AGAIN[reviewsDiff]) {
-      cardsToLearn.push(card);
-    }
-  }
-
-  return shuffle(cardsToLearn);
-}
-
-function getNewCards(cards: ICard[]): ICard[] {
-  return cards.filter((card) => card.reviews.length === 0);
 }
 
 const Learn: FC<ILearnProps> = (props) => {
@@ -123,7 +75,7 @@ const Learn: FC<ILearnProps> = (props) => {
     }
 
     const isCorrect =
-      suggestion.toLowerCase() === currentCard.word.toLowerCase();
+      suggestion.toLowerCase().trim() === currentCard.word.toLowerCase();
 
     if (isCorrect) {
       setNextCardButtonVisible(true);
