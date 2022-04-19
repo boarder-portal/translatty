@@ -6,5 +6,5 @@ export interface IReviewCardRequestParams {
 }
 
 export interface IReviewCardResponse {
-  cards: ICard[];
+  card: ICard;
 }

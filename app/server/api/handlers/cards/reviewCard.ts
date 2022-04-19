@@ -34,5 +34,5 @@ export default async function reviewCard(
 
   await db.writeCards(allCards);
 
-  return res.send({ cards: userCards });
+  return res.send({ card: cardToReview });
 }

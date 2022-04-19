@@ -40,7 +40,7 @@ const Learn: FC<ILearnProps> = (props) => {
     return getNewCards(cards);
   }, [cards, cardsToLearn.length]);
 
-  const updateCurrentAndAllCards = useCallback(
+  const updateCurrentCard = useCallback(
     async (currentCardId: string, isCorrect: boolean) => {
       if (!isCorrect) {
         const lastReview = last(currentCard?.reviews);
@@ -50,23 +50,30 @@ const Learn: FC<ILearnProps> = (props) => {
         }
       }
 
-      const { cards: updatedCards } = await httpClient.reviewCard({
+      const { card: updatedCard } = await httpClient.reviewCard({
         id: currentCardId,
         isCorrect,
       });
-
-      const updatedCard = updatedCards.find(
-        (card) => card.id === currentCardId,
-      );
 
       if (!updatedCard) {
         throw new Error('There are not updated card');
       }
 
       setCardsToLearn((cards) => [updatedCard, ...cards.slice(1)]);
-      setCards(updatedCards);
+
+      const updatedCardIndex = cards.findIndex((c) => c.id === updatedCard.id);
+
+      if (updatedCardIndex === -1) {
+        return;
+      }
+
+      setCards([
+        ...cards.slice(0, updatedCardIndex),
+        updatedCard,
+        ...cards.slice(updatedCardIndex + 1),
+      ]);
     },
-    [currentCard?.reviews, setCards],
+    [cards, currentCard?.reviews, setCards],
   );
 
   const handleCheckCard = useCallback(async () => {
@@ -77,34 +84,33 @@ const Learn: FC<ILearnProps> = (props) => {
     const isCorrect =
       suggestion.toLowerCase().trim() === currentCard.word.toLowerCase();
 
+    await updateCurrentCard(currentCard.id, isCorrect);
+
     if (isCorrect) {
       setNextCardButtonVisible(true);
     }
-
-    await updateCurrentAndAllCards(currentCard.id, isCorrect);
-  }, [currentCard, suggestion, updateCurrentAndAllCards]);
+  }, [currentCard, suggestion, updateCurrentCard]);
 
   const handleRememberCard = useCallback(async () => {
     if (!currentCard) {
       return;
     }
 
-    setNextCardButtonVisible(true);
+    await updateCurrentCard(currentCard.id, true);
 
-    await updateCurrentAndAllCards(currentCard.id, true);
-  }, [currentCard, updateCurrentAndAllCards]);
+    setNextCardButtonVisible(true);
+  }, [currentCard, updateCurrentCard]);
 
   const handleForgetCard = useCallback(async () => {
     if (!currentCard) {
       return;
     }
 
+    await updateCurrentCard(currentCard.id, false);
+
     setNextCardButtonVisible(true);
-
-    await updateCurrentAndAllCards(currentCard.id, false);
-
     setCardsToLearn((cards) => [...cards, cards[0]]);
-  }, [currentCard, updateCurrentAndAllCards]);
+  }, [currentCard, updateCurrentCard]);
 
   const handleNextClick = useCallback(() => {
     setNextCardButtonVisible(false);
