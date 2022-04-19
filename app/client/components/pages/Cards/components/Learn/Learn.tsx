@@ -56,7 +56,7 @@ const Learn: FC<ILearnProps> = (props) => {
       });
 
       if (!updatedCard) {
-        throw new Error('There are not updated card');
+        throw new Error('There are no updated card');
       }
 
       setCardsToLearn((cards) => [updatedCard, ...cards.slice(1)]);
@@ -187,6 +187,8 @@ const Learn: FC<ILearnProps> = (props) => {
           <Link to={`/cards/card/${currentCard.id}/edit`}>Edit</Link>
         </Flex>
       )}
+
+      <Heading level={5}>{`${cardsToLearn.length} cards left`}</Heading>
 
       {(nextCardButtonVisible || currentCard.reviews.length === 0) && (
         <CardProgress reviews={currentCard.reviews} />
