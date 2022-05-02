@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const LoadablePlugin = require('@loadable/webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -29,6 +30,9 @@ module.exports = {
   plugins: [
     ...commonConfig.plugins,
     new LoadablePlugin(),
+    new webpack.DefinePlugin({
+      SERVER: false,
+    }),
     process.env.ANALYZE_BUNDLE ? new BundleAnalyzerPlugin() : undefined,
   ].filter(Boolean),
 };

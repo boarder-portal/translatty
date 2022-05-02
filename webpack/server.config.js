@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 const commonConfig = require('./common.config');
 
@@ -20,4 +21,10 @@ module.exports = {
     chunkFilename: '[name].[contenthash].js',
     path: path.resolve(__dirname, '../build/server'),
   },
+  plugins: [
+    ...commonConfig.plugins,
+    new webpack.DefinePlugin({
+      SERVER: true,
+    }),
+  ],
 };

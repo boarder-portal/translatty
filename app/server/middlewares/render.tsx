@@ -6,10 +6,13 @@ import { StaticRouter } from 'react-router-dom/server';
 import { renderToString } from 'react-dom/server';
 import { RecoilRoot } from 'recoil';
 
-import getPageData, {
-  IPageData,
-} from 'server/middlewares/utilities/getPageData';
-import pageDataToRecoilState from 'common/utilities/pageDataToRecoilState';
+import { IRecoilState } from 'common/types';
+
+import {
+  IDataPreloader,
+  PreloadDataListContext,
+} from 'server/utilities/preloadDataListContext';
+import recoilStateToAtoms from 'common/utilities/recoilStateToAtoms';
 
 import App from 'client/components/App/App';
 
@@ -18,26 +21,48 @@ const extractor = new ChunkExtractor({ statsFile, publicPath: '/build' });
 
 interface IServerAppProps {
   url: string;
-  pageData: IPageData;
+  preloadDataList?: IDataPreloader[];
+  recoilState: IRecoilState;
 }
 
 const ServerApp: FC<IServerAppProps> = (props) => {
-  const { url, pageData } = props;
+  const { url, preloadDataList, recoilState } = props;
 
   return (
-    <StaticRouter location={url}>
-      <RecoilRoot initializeState={pageDataToRecoilState(pageData)}>
-        <App />
+    <PreloadDataListContext.Provider value={preloadDataList || null}>
+      <RecoilRoot initializeState={recoilStateToAtoms(recoilState)}>
+        <StaticRouter location={url}>
+          <App />
+        </StaticRouter>
       </RecoilRoot>
-    </StaticRouter>
+    </PreloadDataListContext.Provider>
   );
 };
 
 export default async function render(req: Request, res: Response) {
-  const pageData = await getPageData(req);
+  const preloadDataList: IDataPreloader[] = [];
+  const recoilState: IRecoilState = {
+    posts: [],
+  };
+
+  const initJsx = extractor.collectChunks(
+    <ServerApp
+      url={req.url}
+      preloadDataList={preloadDataList}
+      recoilState={recoilState}
+    />,
+  );
+
+  renderToString(initJsx);
+
+  await Promise.all(
+    preloadDataList.map((preloadData) => preloadData(recoilState)),
+  );
+
+  console.log('recoilState before final render', recoilState);
 
   const jsx = extractor.collectChunks(
-    <ServerApp url={req.url} pageData={pageData} />,
+    <ServerApp url={req.url} recoilState={recoilState} />,
   );
   const appHtml = renderToString(jsx);
 
@@ -59,7 +84,9 @@ export default async function render(req: Request, res: Response) {
         <link rel="manifest" href="/public/manifest.json?v=2" />
         ${linkTags}
         ${styleTags}
-        <script>window.initialRecoilState='${JSON.stringify(pageData)}'</script>
+        <script>window.initialRecoilState='${JSON.stringify(
+          recoilState,
+        )}'</script>
     </head>
 
     <body>
