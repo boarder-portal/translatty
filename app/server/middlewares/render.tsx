@@ -12,7 +12,7 @@ import {
   IDataPreloader,
   PreloadDataListContext,
 } from 'server/utilities/preloadDataListContext';
-import recoilStateToAtoms from 'common/utilities/recoilStateToAtoms';
+import setAtomsByState from 'common/utilities/setAtomsByState';
 
 import App from 'client/components/App/App';
 
@@ -30,7 +30,7 @@ const ServerApp: FC<IServerAppProps> = (props) => {
 
   return (
     <PreloadDataListContext.Provider value={preloadDataList || null}>
-      <RecoilRoot initializeState={recoilStateToAtoms(recoilState)}>
+      <RecoilRoot initializeState={setAtomsByState(recoilState)}>
         <StaticRouter location={url}>
           <App />
         </StaticRouter>

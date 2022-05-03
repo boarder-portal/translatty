@@ -3,7 +3,7 @@ import { postsAtom } from 'common/atoms';
 
 import { IRecoilState } from 'common/types';
 
-export default function recoilStateToAtoms(
+export default function setAtomsByState(
   recoilState: IRecoilState,
 ): (mutableSnapshot: MutableSnapshot) => void {
   const { posts } = recoilState;

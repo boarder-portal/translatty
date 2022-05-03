@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { hydrate } from 'react-dom';
 import { RecoilRoot } from 'recoil';
 
-import recoilStateToAtoms from 'common/utilities/recoilStateToAtoms';
+import setAtomsByState from 'common/utilities/setAtomsByState';
 
 import App from 'client/components/App/App';
 
@@ -15,7 +15,7 @@ if (rootEl) {
     hydrate(
       <BrowserRouter>
         <RecoilRoot
-          initializeState={recoilStateToAtoms(
+          initializeState={setAtomsByState(
             JSON.parse(window.initialRecoilState),
           )}
         >
