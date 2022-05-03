@@ -1,3 +1,3 @@
 interface Window {
-  initialRecoilState: string;
+  initialState: string;
 }

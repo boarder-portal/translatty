@@ -1,20 +1,19 @@
 import { useContext, useEffect } from 'react';
-import { postsAtom } from 'common/atoms';
-import { useRecoilState } from 'recoil';
-
-import { IRecoilState } from 'common/types';
 
 import fetchPosts from 'server/api/utilities/fetchPosts';
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 import { PreloadDataListContext } from 'server/utilities/preloadDataListContext';
+import { IStore } from 'common/utilities/store';
+
+import useAtom from 'client/components/pages/Posts/hooks/useAtom';
 
 export default function usePosts() {
-  const [posts, setPosts] = useRecoilState(postsAtom);
+  const [posts, setPosts] = useAtom('posts');
   const preloadDataList = useContext(PreloadDataListContext);
 
   if (SERVER) {
-    preloadDataList?.push(async (recoilState: IRecoilState) => {
-      recoilState.posts = await fetchPosts();
+    preloadDataList?.push(async (store: IStore) => {
+      store.value.posts = await fetchPosts();
     });
   }
 

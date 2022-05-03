@@ -1,9 +1,9 @@
 import { createContext } from 'react';
 
-import { IRecoilState } from 'common/types';
+import { IStore } from 'common/utilities/store';
 
 export interface IDataPreloader {
-  (recoilState: IRecoilState): void;
+  (store: IStore): void;
 }
 
 export const PreloadDataListContext = createContext<IDataPreloader[] | null>(

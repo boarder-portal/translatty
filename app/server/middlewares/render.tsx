@@ -4,15 +4,16 @@ import { Request, Response } from 'express';
 import { ChunkExtractor } from '@loadable/server';
 import { StaticRouter } from 'react-router-dom/server';
 import { renderToString } from 'react-dom/server';
-import { RecoilRoot } from 'recoil';
-
-import { IRecoilState } from 'common/types';
 
 import {
   IDataPreloader,
   PreloadDataListContext,
 } from 'server/utilities/preloadDataListContext';
-import setAtomsByState from 'common/utilities/setAtomsByState';
+import createStore, {
+  getInitialState,
+  IStore,
+  StoreContext,
+} from 'common/utilities/store';
 
 import App from 'client/components/App/App';
 
@@ -22,47 +23,39 @@ const extractor = new ChunkExtractor({ statsFile, publicPath: '/build' });
 interface IServerAppProps {
   url: string;
   preloadDataList?: IDataPreloader[];
-  recoilState: IRecoilState;
+  store: IStore;
 }
 
 const ServerApp: FC<IServerAppProps> = (props) => {
-  const { url, preloadDataList, recoilState } = props;
+  const { url, preloadDataList, store } = props;
 
   return (
     <PreloadDataListContext.Provider value={preloadDataList || null}>
-      <RecoilRoot initializeState={setAtomsByState(recoilState)}>
+      <StoreContext.Provider value={store}>
         <StaticRouter location={url}>
           <App />
         </StaticRouter>
-      </RecoilRoot>
+      </StoreContext.Provider>
     </PreloadDataListContext.Provider>
   );
 };
 
 export default async function render(req: Request, res: Response) {
   const preloadDataList: IDataPreloader[] = [];
-  const recoilState: IRecoilState = {
-    posts: [],
-  };
+  const store: IStore = createStore(getInitialState());
 
   const initJsx = extractor.collectChunks(
-    <ServerApp
-      url={req.url}
-      preloadDataList={preloadDataList}
-      recoilState={recoilState}
-    />,
+    <ServerApp url={req.url} preloadDataList={preloadDataList} store={store} />,
   );
 
   renderToString(initJsx);
 
-  await Promise.all(
-    preloadDataList.map((preloadData) => preloadData(recoilState)),
-  );
+  await Promise.all(preloadDataList.map((preloadData) => preloadData(store)));
 
-  console.log('recoilState before final render', recoilState);
+  console.log('state before final render', store.value);
 
   const jsx = extractor.collectChunks(
-    <ServerApp url={req.url} recoilState={recoilState} />,
+    <ServerApp url={req.url} store={store} />,
   );
   const appHtml = renderToString(jsx);
 
@@ -84,9 +77,7 @@ export default async function render(req: Request, res: Response) {
         <link rel="manifest" href="/public/manifest.json?v=2" />
         ${linkTags}
         ${styleTags}
-        <script>window.initialRecoilState='${JSON.stringify(
-          recoilState,
-        )}'</script>
+        <script>window.initialState='${JSON.stringify(store.value)}'</script>
     </head>
 
     <body>
