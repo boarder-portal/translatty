@@ -1,7 +1,16 @@
-import { FC, memo, useCallback, useMemo, useRef, useState } from 'react';
+import {
+  FC,
+  FormEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import first from 'lodash/first';
 import shuffle from 'lodash/shuffle';
-import { Button, Flex, Heading, Input } from 'boarder-components';
+import { Flex, Heading, Input } from 'boarder-components';
 import last from 'lodash/last';
 import { Link } from 'react-router-dom';
 
@@ -12,6 +21,9 @@ import getInitialCardsToLearn from 'client/components/pages/Cards/components/Lea
 import getNewCards from 'client/components/pages/Cards/components/Learn/utilities/getNewCards';
 
 import CardProgress from 'client/components/pages/Cards/components/CardProgress/CardProgress';
+import Button from 'client/components/common/Button/Button';
+
+import useGlobalListener from 'client/hooks/useGlobalListener';
 
 import cx from './Learn.pcss';
 
@@ -31,6 +43,17 @@ const Learn: FC<ILearnProps> = (props) => {
   const suggestionInputRef = useRef<HTMLInputElement | null>(null);
 
   const currentCard = first(cardsToLearn) || null;
+
+  const suggestionClosestCard = useMemo(
+    () =>
+      currentCard &&
+      cards.find(
+        (card) =>
+          card.word.startsWith(suggestion) &&
+          suggestion.length >= card.word.length * 0.8,
+      ),
+    [cards, currentCard, suggestion],
+  );
 
   const additionalNewCards = useMemo(() => {
     if (cardsToLearn.length > 0) {
@@ -76,20 +99,31 @@ const Learn: FC<ILearnProps> = (props) => {
     [cards, currentCard?.reviews, setCards],
   );
 
-  const handleCheckCard = useCallback(async () => {
-    if (!currentCard || !suggestion) {
-      return;
-    }
+  const handleNextClick = useCallback(() => {
+    setNextCardButtonVisible(false);
+    setCardsToLearn((cards) => cards.slice(1));
+    setSuggestion('');
+  }, []);
 
-    const isCorrect =
-      suggestion.toLowerCase().trim() === currentCard.word.toLowerCase();
+  const handleSubmit = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
 
-    await updateCurrentCard(currentCard.id, isCorrect);
+      if (!currentCard || !suggestion) {
+        return;
+      }
 
-    if (isCorrect) {
-      setNextCardButtonVisible(true);
-    }
-  }, [currentCard, suggestion, updateCurrentCard]);
+      const isCorrect =
+        suggestion.toLowerCase().trim() === currentCard.word.toLowerCase();
+
+      await updateCurrentCard(currentCard.id, isCorrect);
+
+      if (isCorrect) {
+        setNextCardButtonVisible(true);
+      }
+    },
+    [currentCard, suggestion, updateCurrentCard],
+  );
 
   const handleRememberCard = useCallback(async () => {
     if (!currentCard) {
@@ -112,12 +146,6 @@ const Learn: FC<ILearnProps> = (props) => {
     setCardsToLearn((cards) => [...cards, cards[0]]);
   }, [currentCard, updateCurrentCard]);
 
-  const handleNextClick = useCallback(() => {
-    setNextCardButtonVisible(false);
-    setCardsToLearn((cards) => cards.slice(1));
-    setSuggestion('');
-  }, []);
-
   const handleLearnAdditionalNewWords = useCallback(() => {
     setCardsToLearn(shuffle(additionalNewCards.slice(0, 5)));
   }, [additionalNewCards]);
@@ -129,10 +157,10 @@ const Learn: FC<ILearnProps> = (props) => {
 
     return (
       <>
-        <Button onClick={handleCheckCard}>Check</Button>
+        <Button type="submit">Check</Button>
 
         <div className={cx.forgetAndRememberActions}>
-          <Button type="danger" onClick={handleForgetCard}>
+          <Button variant="outlined" onClick={handleForgetCard}>
             Forget
           </Button>
 
@@ -141,12 +169,24 @@ const Learn: FC<ILearnProps> = (props) => {
       </>
     );
   }, [
-    handleCheckCard,
     handleForgetCard,
     handleNextClick,
     handleRememberCard,
     nextCardButtonVisible,
   ]);
+
+  useEffect(() => {
+    suggestionInputRef.current?.focus();
+  }, []);
+
+  useGlobalListener('keydown', document, async (e) => {
+    if (e.key === 'Enter' && nextCardButtonVisible) {
+      handleNextClick();
+      suggestionInputRef.current?.focus();
+    } else if (e.key === 'Escape' && !nextCardButtonVisible) {
+      await handleForgetCard();
+    }
+  });
 
   if (additionalNewCards.length) {
     return (
@@ -181,40 +221,46 @@ const Learn: FC<ILearnProps> = (props) => {
   }
 
   return (
-    <Flex direction="column" between={2}>
-      {nextCardButtonVisible && (
-        <Flex justifyContent="flexEnd">
-          <Link to={`/cards/card/${currentCard.id}/edit`}>Edit</Link>
-        </Flex>
-      )}
+    <form onSubmit={handleSubmit}>
+      <Flex direction="column" between={2}>
+        {nextCardButtonVisible && (
+          <Flex justifyContent="flexEnd">
+            <Link to={`/cards/card/${currentCard.id}/edit`}>Edit</Link>
+          </Flex>
+        )}
 
-      <Heading level={5}>{`${cardsToLearn.length} cards left`}</Heading>
+        <Heading level={5}>{`${cardsToLearn.length} cards left`}</Heading>
 
-      {(nextCardButtonVisible || currentCard.reviews.length === 0) && (
-        <CardProgress reviews={currentCard.reviews} />
-      )}
+        {(nextCardButtonVisible || currentCard.reviews.length === 0) && (
+          <CardProgress reviews={currentCard.reviews} />
+        )}
 
-      <div>{currentCard.definition}</div>
+        <div>{currentCard.definition}</div>
 
-      {nextCardButtonVisible ? (
-        <>
-          <div>{currentCard.word}</div>
+        {nextCardButtonVisible ? (
+          <>
+            <div>{currentCard.word}</div>
 
-          {currentCard.examples.length ? (
-            <div>{currentCard.examples.join('\n')}</div>
-          ) : null}
-        </>
-      ) : (
-        <Input
-          value={suggestion}
-          ref={suggestionInputRef}
-          disableAutoCorrect
-          onInput={setSuggestion}
-        />
-      )}
+            {currentCard.examples.length ? (
+              <div>{currentCard.examples.join('\n')}</div>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <Input
+              value={suggestion}
+              ref={suggestionInputRef}
+              disableAutoCorrect
+              onInput={setSuggestion}
+            />
 
-      {actions}
-    </Flex>
+            {suggestionClosestCard && <div>{suggestionClosestCard.word}</div>}
+          </>
+        )}
+
+        {actions}
+      </Flex>
+    </form>
   );
 };
 

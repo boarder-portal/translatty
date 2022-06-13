@@ -1,7 +1,6 @@
 import { memo, FC, useState, useCallback, useMemo } from 'react';
 import { Button, Flex, Heading, Input } from 'boarder-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { update } from 'lodash';
 
 import { ICard } from 'common/types/cards';
 
@@ -51,6 +50,26 @@ const EditCard: FC<IEditCardProps> = (props) => {
     navigate(`/cards/card/${updatedCard.id}`);
   }, [card, cards, definition, example, navigate, setCards, word]);
 
+  const deleteCard = useCallback(async () => {
+    if (!card) {
+      return;
+    }
+
+    await httpClient.deleteCard({
+      id: card.id,
+    });
+
+    const cardIndex = cards.findIndex((c) => c.id === card.id);
+
+    if (cardIndex === -1) {
+      return;
+    }
+
+    setCards([...cards.slice(0, cardIndex), ...cards.slice(cardIndex + 1)]);
+
+    navigate('/cards');
+  }, [card, cards, navigate, setCards]);
+
   return (
     <Flex direction="column" between={2}>
       <Heading level={1}>Edit card</Heading>
@@ -64,8 +83,10 @@ const EditCard: FC<IEditCardProps> = (props) => {
       />
 
       <Input value={example} placeholder="example" onInput={setExample} />
-
       <Button onClick={editCard}>Edit</Button>
+      <Button type="danger" onClick={deleteCard}>
+        Delete
+      </Button>
     </Flex>
   );
 };
