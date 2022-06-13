@@ -49,7 +49,7 @@ const Learn: FC<ILearnProps> = (props) => {
       currentCard &&
       cards.find(
         (card) =>
-          card.word.startsWith(suggestion) &&
+          card.word.startsWith(suggestion.toLowerCase()) &&
           suggestion.length >= card.word.length * 0.8,
       ),
     [cards, currentCard, suggestion],
