@@ -103,6 +103,8 @@ const Learn: FC<ILearnProps> = (props) => {
     setNextCardButtonVisible(false);
     setCardsToLearn((cards) => cards.slice(1));
     setSuggestion('');
+
+    setTimeout(() => suggestionInputRef.current?.focus(), 1000);
   }, []);
 
   const handleSubmit = useCallback(
