@@ -154,7 +154,11 @@ const Learn: FC<ILearnProps> = (props) => {
 
   const actions = useMemo(() => {
     if (nextCardButtonVisible) {
-      return <Button onClick={handleNextClick}>Next</Button>;
+      return (
+        <Button className={cx.nextCardButton} onClick={handleNextClick}>
+          Next
+        </Button>
+      );
     }
 
     return (
