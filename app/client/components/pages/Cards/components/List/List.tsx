@@ -17,6 +17,11 @@ const List: FC<IListProps> = (props) => {
 
   const navigate = useNavigate();
 
+  const sortedCards = useMemo(
+    () => [...cards].sort((a, b) => (a.word > b.word ? 1 : -1)),
+    [cards],
+  );
+
   const todayStats = useMemo(() => getTodayStats(cards), [cards]);
 
   const handleAddCardClick = useCallback(() => {
@@ -39,8 +44,8 @@ const List: FC<IListProps> = (props) => {
       <Link to="/cards/popularWords">Popular words</Link>
 
       <Flex direction="column" between={2}>
-        {cards.length
-          ? cards.map((card) => (
+        {sortedCards.length
+          ? sortedCards.map((card) => (
               <Link key={card.id} to={`/cards/card/${card.id}`}>
                 {card.word}
               </Link>
